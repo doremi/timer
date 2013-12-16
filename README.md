@@ -7,8 +7,8 @@ and store every period using json format.
 Dependency
 ------------
 
-    * jansson  (https://github.com/akheron/jansson)
-    * pthread
+* jansson  (https://github.com/akheron/jansson)
+* pthread
 
 Compilation
 ------------
