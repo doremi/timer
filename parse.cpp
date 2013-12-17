@@ -168,12 +168,35 @@ TEST(partition_day_test, HandleNoneZeroInput)
     EXPECT_EQ(10, sum_day(vec[2]));
 }
 
+void print_duration(time_t duration)
+{
+    int h, m, s;
+    h = duration / 3600;
+    m = duration % 3600 / 60;
+    s = duration % 3600 % 60;
+    printf("%02d:%02d:%02d\n", h, m, s);
+}
+
+void print_detail_day(vector<pair<struct timeval, struct timeval>> &v)
+{
+    char startbuf[32], endbuf[32];
+    struct timeval res;
+    pair<struct timeval, struct timeval> p;
+
+    for (size_t i = 0; i < v.size(); ++i) {
+        p = v[i];
+        timersub(&p.second, &p.first, &res);
+        printf("%s%s", ctime_r(&p.first.tv_sec, startbuf), ctime_r(&p.second.tv_sec, endbuf));
+        print_duration(res.tv_sec);
+        printf("\n");
+    }
+}
+
 int main(int argc, char **argv)
 {
     //    testing::InitGoogleTest(&argc, argv);
     //    return RUN_ALL_TESTS();
 
-    int h, m, s;
     vector<vector<pair<struct timeval, struct timeval>>> vec;
     json_t *j_array = json_load_file(TIME_LOG_FILE, JSON_DECODE_ANY, NULL);
 
@@ -183,11 +206,12 @@ int main(int argc, char **argv)
         time_t t = sum_day(vec[i]);
         struct tm res;
         localtime_r(&vec[i][0].first.tv_sec, &res);
-        printf("%d/%02d/%02d ", res.tm_year+1900, res.tm_mon+1, res.tm_mday);
-        h = t / 3600;
-        m = t % 3600 / 60;
-        s = t % 3600 % 60;
-        printf("%02d:%02d:%02d\n\n", h, m, s);
+        printf("%d/%02d/%02d\n", res.tm_year+1900, res.tm_mon+1, res.tm_mday);
+        printf("================\n\n");
+        print_detail_day(vec[i]);
+        printf("Total: ");
+        print_duration(t);
+        printf("****************\n\n");
     }
 
     return 0;
